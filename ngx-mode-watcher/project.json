@@ -1,0 +1,26 @@
+{
+  "name": "ngx-mode-watcher",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ngx-mode-watcher/src",
+  "prefix": "ngx-mode-watcher",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "ngx-mode-watcher/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "ngx-mode-watcher/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "ngx-mode-watcher/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}
