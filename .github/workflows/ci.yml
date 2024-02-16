@@ -6,7 +6,7 @@ name: ci
   pull_request: {}
 env:
   DEMO_APP_ARTIFACT_NAME: demo
-  DEMO_APP_PATH: dist/apps/demo/
+  DEMO_APP_PATH: dist/apps/demo/browser
   NODE_OPTIONS: '--max-old-space-size=6144'
 jobs:
   prettier:
