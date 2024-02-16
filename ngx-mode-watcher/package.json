@@ -1,6 +1,6 @@
 {
   "name": "ngx-mode-watcher",
-  "version": "0.0.1",
+  "version": "0.2.1",
   "description": "Simple light/dark mode management for Angular apps. 🌑 ←→ ☀️",
   "bugs": {
     "url": "https://github.com/tutkli/ngx-mode-watcher/issues"
