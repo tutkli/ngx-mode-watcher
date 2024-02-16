@@ -7,7 +7,8 @@
     "build": "nx run-many --target build --all --parallel=1",
     "prepare": "git config core.hookspath .githooks",
     "prettify": "prettier --write .",
-    "test": "nx run-many --target test --all"
+    "test": "nx test ngx-mode-watcher",
+    "tests:ci": "nx test ngx-mode-watcher --runInBand"
   },
   "private": true,
   "dependencies": {
