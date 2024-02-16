@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "prepare": "git config core.hookspath .githooks",
     "prettify": "prettier --write ."
   },
   "private": true,
@@ -54,6 +55,7 @@
     "jest-environment-jsdom": "^29.4.1",
     "jest-preset-angular": "~13.1.4",
     "jsonc-eslint-parser": "^2.1.0",
+    "lint-staged": "^15.2.2",
     "ng-packagr": "~17.1.0",
     "nx": "18.0.4",
     "postcss": "^8.4.5",
