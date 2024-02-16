@@ -83,8 +83,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
-          name: '${{ env.DOCS_APP_ARTIFACT_NAME }}'
-          path: '${{ env.DOCS_APP_PATH }}'
+          name: '${{ env.DEMO_APP_ARTIFACT_NAME }}'
+          path: '${{ env.DEMO_APP_PATH }}'
           retention-days: 1
   deploy-demo:
     name: '[Merge] Deploy demo website'
