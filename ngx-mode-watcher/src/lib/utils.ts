@@ -24,7 +24,7 @@ export function setInitialMode(defaultMode: Mode, themeColors?: ThemeColors) {
     if (themeMetaEl) {
       themeMetaEl.setAttribute(
         'content',
-        mode === 'light' ? themeColors.light : themeColors.dark,
+        mode === 'light' ? themeColors.light : themeColors.dark
       );
     }
   }

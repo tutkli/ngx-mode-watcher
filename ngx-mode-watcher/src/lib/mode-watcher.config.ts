@@ -1,5 +1,5 @@
-import { Mode, ThemeColors } from './types';
 import { InjectionToken } from '@angular/core';
+import { Mode, ThemeColors } from './types';
 
 export type ModeWatcherConfig = {
   track: boolean;
@@ -12,7 +12,7 @@ export const MODE_WATCHER_CONFIG = new InjectionToken<ModeWatcherConfig>(
   {
     providedIn: 'root',
     factory: () => defaultConfig,
-  },
+  }
 );
 
 export const defaultConfig: ModeWatcherConfig = {
@@ -22,7 +22,7 @@ export const defaultConfig: ModeWatcherConfig = {
 };
 
 export function modeWatcherConfig(
-  config: Partial<ModeWatcherConfig>,
+  config: Partial<ModeWatcherConfig>
 ): ModeWatcherConfig {
   return {
     ...defaultConfig,

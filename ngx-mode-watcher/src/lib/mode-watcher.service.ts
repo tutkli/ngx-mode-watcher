@@ -1,4 +1,4 @@
-import { MODE_WATCHER_CONFIG } from './mode-watcher.config';
+import { isPlatformBrowser } from '@angular/common';
 import {
   computed,
   DestroyRef,
@@ -8,9 +8,9 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { isValidMode, noopStorage } from './utils';
+import { MODE_WATCHER_CONFIG } from './mode-watcher.config';
 import { localStorageKey, Mode, ThemeColors } from './types';
+import { isValidMode, noopStorage } from './utils';
 
 const defaultMode = 'system';
 
@@ -77,7 +77,7 @@ export class ModeWatcherService {
       if (mediaQueryState)
         mediaQueryState.removeEventListener(
           'change',
-          this.mediaQueryChangeHandler,
+          this.mediaQueryChangeHandler
         );
       removeEventListener('storage', this.storageHandler);
     });

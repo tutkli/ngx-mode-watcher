@@ -13,17 +13,17 @@ import { setInitialMode } from './utils';
 
 function initializeModeWatcher(
   _modeWatcherService: ModeWatcherService,
-  config: ModeWatcherConfig,
+  config: ModeWatcherConfig
 ) {
   return () =>
-    new Promise<void>((resolve) => {
+    new Promise<void>(resolve => {
       setInitialMode(config.defaultMode, config.themeColors);
       resolve();
     });
 }
 
 export function provideModeWatcher(
-  config: Partial<ModeWatcherConfig> = {},
+  config: Partial<ModeWatcherConfig> = {}
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
