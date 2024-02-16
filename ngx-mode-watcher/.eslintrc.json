@@ -6,14 +6,15 @@
       "files": ["*.ts"],
       "extends": [
         "plugin:@nx/angular",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:jest-dom"
       ],
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
           {
             "type": "attribute",
-            "prefix": "ngxModeWatcher",
+            "prefix": "mw",
             "style": "camelCase"
           }
         ],
@@ -21,7 +22,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "ngx-mode-watcher",
+            "prefix": "mw",
             "style": "kebab-case"
           }
         ]
