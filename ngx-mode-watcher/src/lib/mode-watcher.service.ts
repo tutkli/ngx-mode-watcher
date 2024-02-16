@@ -8,17 +8,17 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
+import { Meta } from '@angular/platform-browser';
 import { MODE_WATCHER_CONFIG } from './mode-watcher.config';
 import { localStorageKey, Mode, ThemeColors } from './types';
 import { isValidMode, noopStorage } from './utils';
-
-const defaultMode = 'system';
 
 @Injectable({ providedIn: 'root' })
 export class ModeWatcherService {
   private readonly config = inject(MODE_WATCHER_CONFIG);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly meta = inject(Meta);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
   private readonly storage = this.isBrowser ? localStorage : noopStorage;
 
@@ -43,6 +43,13 @@ export class ModeWatcherService {
   });
 
   constructor() {
+    if (this._themeColors()) {
+      this.meta.addTag({
+        name: 'theme-color',
+        content: this._themeColors()!.dark,
+      });
+    }
+
     let mediaQueryState: MediaQueryList | undefined;
     if (this.isBrowser) {
       mediaQueryState = window.matchMedia('(prefers-color-scheme: light)');
@@ -95,26 +102,26 @@ export class ModeWatcherService {
 
   /** Reset the mode to operating system preference */
   public resetMode() {
-    this._userPrefersMode.set(defaultMode);
+    this._userPrefersMode.set(this.config.defaultMode);
   }
 
-  private storageHandler(e: StorageEvent) {
+  private initUserPrefersMode() {
+    const initialValue = this.storage.getItem(localStorageKey);
+    return isValidMode(initialValue) ? initialValue : this.config.defaultMode;
+  }
+
+  private storageHandler = (e: StorageEvent) => {
     if (e.key !== localStorageKey) return;
     const newValue = e.newValue;
     if (isValidMode(newValue)) {
       this._userPrefersMode.set(newValue);
     } else {
-      this._userPrefersMode.set(defaultMode);
+      this._userPrefersMode.set(this.config.defaultMode);
     }
-  }
+  };
 
-  private mediaQueryChangeHandler(e: MediaQueryListEvent) {
+  private mediaQueryChangeHandler = (e: MediaQueryListEvent) => {
     if (!this.config.track) return;
     this._systemPrefersMode.set(e.matches ? 'light' : 'dark');
-  }
-
-  private initUserPrefersMode() {
-    const initialValue = this.storage.getItem(localStorageKey);
-    return isValidMode(initialValue) ? initialValue : defaultMode;
-  }
+  };
 }
