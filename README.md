@@ -15,13 +15,13 @@ npm install ngx-mode-watcher
 Add `provideModeWatcher()` to your app config `app.config.ts` file.
 
 ```ts
-import {provideModeWatcher} from "ngx-mode-watcher";
+import { provideModeWatcher } from 'ngx-mode-watcher';
 
 export const appConfig: ApplicationConfig = {
-    providers: [
-        // ...
-        provideModeWatcher()
-    ]
+  providers: [
+    // ...
+    provideModeWatcher(),
+  ],
 };
 ```
 
@@ -31,8 +31,8 @@ The provider will automatically detect the user's preferences and apply/remove t
 
 ```ts
 provideModeWatcher({
-    track: false
-})
+  track: false,
+});
 ```
 
 `ModeWatcher` can also be configured with a default mode instead of automatically detecting the user's preference.
@@ -41,8 +41,8 @@ To set a default mode, use the `defaultMode` config:
 
 ```ts
 provideModeWatcher({
-    defaultMode: 'dark'
-})
+  defaultMode: 'dark',
+});
 ```
 
 `ModeWatcher` can manage the `theme-color` meta tag for you.
@@ -51,8 +51,8 @@ To enable this, set the `themeColor` config to your preferred colors:
 
 ```ts
 provideModeWatcher({
-    themeColor: { dark: "black", light: "white" }
-})
+  themeColor: { dark: 'black', light: 'white' },
+});
 ```
 
 ## ModeWatcherService
@@ -60,13 +60,13 @@ provideModeWatcher({
 To manage the mode of your application, you can inject the `ModeWatcherService`.
 
 ```ts
-import {ModeWatcherService} from "./mode-watcher.service";
+import { ModeWatcherService } from './mode-watcher.service';
 
 @Component({
-//...
+  //...
 })
 export class MyComp {
-    private readonly modeWatcher = inject(ModeWatcherService);
+  private readonly modeWatcher = inject(ModeWatcherService);
 }
 ```
 
