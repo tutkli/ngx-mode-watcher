@@ -5,10 +5,12 @@
   "scripts": {
     "start:demo": "nx serve demo",
     "build": "nx run-many --target build --all --parallel=1",
+    "build:package": "nx build ngx-mode-watcher",
     "prepare": "git config core.hookspath .githooks",
     "prettify": "prettier --write .",
     "test": "nx test ngx-mode-watcher",
-    "tests:ci": "nx test ngx-mode-watcher --runInBand"
+    "tests:ci": "nx test ngx-mode-watcher --runInBand",
+    "ci:publish": "npm run build:package && changeset publish"
   },
   "private": true,
   "dependencies": {
@@ -35,6 +37,7 @@
     "@angular/cli": "~17.1.0",
     "@angular/compiler-cli": "~17.1.0",
     "@angular/language-service": "~17.1.0",
+    "@changesets/cli": "^2.27.1",
     "@nx/eslint": "18.0.4",
     "@nx/eslint-plugin": "18.0.4",
     "@nx/jest": "18.0.4",
