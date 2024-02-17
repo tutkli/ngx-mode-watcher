@@ -73,6 +73,7 @@ jobs:
         run: npm run tests:ci
 
   Demo:
+    if: github.repository == 'tutkli/ngx-mode-watcher'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
