@@ -1,20 +1,27 @@
-name: ci
-'on':
+name: CI
+
+on:
   push:
     branches:
       - master
-  pull_request: {}
+  pull_request:
+
 env:
   DEMO_APP_ARTIFACT_NAME: demo
   DEMO_APP_PATH: dist/apps/demo/browser
   NODE_OPTIONS: '--max-old-space-size=6144'
+
+# cancel in-progress runs on new commits to same PR (gitub.event.number)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
-  prettier:
+  Prettier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: '${{ github.head_ref }}'
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
@@ -28,7 +35,8 @@ jobs:
         run: npm ci
       - name: Validate
         run: npx prettier --check .
-  build:
+
+  Build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -44,7 +52,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-  tests:
+
+  Tests:
     runs-on: ubuntu-latest
     needs:
       - build
@@ -62,7 +71,8 @@ jobs:
         run: npm ci
       - name: Test
         run: npm run tests:ci
-  demo:
+
+  Build-demo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -86,7 +96,8 @@ jobs:
           name: '${{ env.DEMO_APP_ARTIFACT_NAME }}'
           path: '${{ env.DEMO_APP_PATH }}'
           retention-days: 1
-  deploy-demo:
+
+  Deploy-demo:
     name: '[Merge] Deploy demo website'
     needs:
       - build
