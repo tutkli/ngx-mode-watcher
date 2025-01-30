@@ -23,15 +23,17 @@ export class ModeWatcherService {
   private readonly storage = this.isBrowser ? localStorage : noopStorage;
 
   /** Theme colors for light and dark modes. */
-  private _themeColors = signal<ThemeColors>(this.config.themeColors);
+  private readonly _themeColors = signal<ThemeColors>(this.config.themeColors);
   public themeColors = this._themeColors.asReadonly();
 
   /** Signal that represents the user's preferred mode (`"dark"`, `"light"` or `"system"`) */
-  private _userPrefersMode = signal<Mode>(this.initUserPrefersMode());
+  private readonly _userPrefersMode = signal<Mode>(this.initUserPrefersMode());
   public userPrefersMode = this._userPrefersMode.asReadonly();
 
   /** Signal that represents the system's preferred mode (`"dark"`, `"light"` or `undefined`) */
-  private _systemPrefersMode = signal<'dark' | 'light' | undefined>(undefined);
+  private readonly _systemPrefersMode = signal<'dark' | 'light' | undefined>(
+    undefined
+  );
   public systemPrefersMode = this._systemPrefersMode.asReadonly();
 
   /** Signal that represents the current mode (`"dark"`, `"light"` or `undefined`) */
@@ -43,10 +45,11 @@ export class ModeWatcherService {
   });
 
   constructor() {
-    if (this._themeColors()) {
+    const themeColors = this._themeColors();
+    if (themeColors && this.isBrowser) {
       this.meta.addTag({
         name: 'theme-color',
-        content: this._themeColors()!.dark,
+        content: themeColors.dark,
       });
     }
 
