@@ -97,7 +97,7 @@ Now, when the mode is dark, the root `html` element will have the `dddd` class, 
 
 ### Custom local storage names
 
-By default, `NgxModeWatcher` will use the following local storage keys to store the mode and theme:
+By default, `ModeWatcher` will use the following local storage keys to store the mode and theme:
 
 - ngx-mode-watcher-mode
 - ngx-mode-watcher-theme
