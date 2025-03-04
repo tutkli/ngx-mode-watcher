@@ -7,7 +7,7 @@ export const noopStorage = {
   setItem: (_key: string, _value: string) => {},
 };
 
-/** Used to set the mode on initial page load to prevent FOUC */
+/** Used to set the mode in the initial page load to prevent FOUC */
 export function setInitialMode(defaultMode: Mode, themeColors?: ThemeColors) {
   const rootEl = document.documentElement;
   const mode = localStorage.getItem(localStorageKey) ?? defaultMode;

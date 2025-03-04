@@ -1,7 +1,8 @@
 import {
-  APP_INITIALIZER,
   EnvironmentProviders,
+  inject,
   makeEnvironmentProviders,
+  provideAppInitializer,
 } from '@angular/core';
 import {
   MODE_WATCHER_CONFIG,
@@ -11,17 +12,6 @@ import {
 import { ModeWatcherService } from './mode-watcher.service';
 import { setInitialMode } from './utils';
 
-function initializeModeWatcher(
-  _modeWatcherService: ModeWatcherService,
-  config: ModeWatcherConfig
-) {
-  return () =>
-    new Promise<void>(resolve => {
-      setInitialMode(config.defaultMode, config.themeColors);
-      resolve();
-    });
-}
-
 export function provideModeWatcher(
   config: Partial<ModeWatcherConfig> = {}
 ): EnvironmentProviders {
@@ -30,11 +20,10 @@ export function provideModeWatcher(
       provide: MODE_WATCHER_CONFIG,
       useValue: modeWatcherConfig(config),
     },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeModeWatcher,
-      multi: true,
-      deps: [ModeWatcherService, MODE_WATCHER_CONFIG],
-    },
+    provideAppInitializer(() => {
+      inject(ModeWatcherService);
+      const config = inject(MODE_WATCHER_CONFIG);
+      setInitialMode(config.defaultMode, config.themeColors);
+    }),
   ]);
 }
