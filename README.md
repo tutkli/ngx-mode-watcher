@@ -1,102 +1,204 @@
-# NgxModeWatcher
+# Ngx Mode Watcher
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Simple utilities to manage light and dark mode in your Angular app.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Installation
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+Make sure you are using Angular 16 or greater.
 
-## Run tasks
-
-To run the dev server for your app, use:
-
-```sh
-npx nx serve demo
+```bash
+npm install ngx-mode-watcher
 ```
 
-To create a production bundle:
+## Usage
 
-```sh
-npx nx build demo
+Add `provideModeWatcher()` to your app config `app.config.ts` file.
+
+```ts
+import { provideModeWatcher } from 'ngx-mode-watcher';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ...
+    provideModeWatcher(),
+  ],
+};
 ```
 
-To see all available targets to run for a project, run:
+The provider will automatically detect the user's preferences and apply/remove the `"dark"` class, along with the corresponding `color-scheme` style attribute to the `html` element.
 
-```sh
-npx nx show project demo
+### Disable tracking
+
+`ModeWatcher` will automatically track operating system preferences and apply these if no user preference is set. If you wish to disable this behavior, set the `track` config to `false`:
+
+```ts
+provideModeWatcher({
+  track: false,
+});
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Default mode
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+`ModeWatcher` can also be configured with a default mode instead of automatically detecting the user's preference.
 
-## Add new projects
+To set a default mode, use the `defaultMode` config:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
+```ts
+provideModeWatcher({
+  defaultMode: 'dark',
+});
 ```
 
-To generate a new library, use:
+### Themes
 
-```sh
-npx nx g @nx/angular:lib mylib
+In addition to the `dark`, `light`, and `system` modes, ModeWatcher can also be configured with a theme which will be applied to the root html element like so:
+
+```html
+<html data-theme="your-custom-theme"></html>
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+To configure a theme, you can set a default theme in the provider config, or change the theme manually using the ModeWatcherService:
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```ts
+// app.config.ts
+provideModeWatcher({
+  defaultTheme: 'emerald',
+});
 
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+// inside a component or service:
+modeWatcher = inject(ModeWatcherService)
+this.modeWatcher.setTheme('emerald')
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+### Theme colors
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+`ModeWatcher` can manage the `theme-color` meta tag for you.
 
-### Step 2
+To enable this, set the `themeColor` config to your preferred colors:
 
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```ts
+provideModeWatcher({
+  themeColor: { dark: "#000", light: "#fff" },
+});
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Custom class names
 
-## Install Nx Console
+By default, `ModeWatcher` will add the `dark` class to the root `html` element when the mode is dark, and remove it when the mode is light. You can customize this behavior by passing an array of classNames to the darkClassNames and/or lightClassNames config:
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+```ts
+provideModeWatcher({
+  darkClassNames: ['dddd'],
+  lightClassNames: ['fff'],
+});
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Now, when the mode is dark, the root `html` element will have the `dddd` class, and when the mode is light, the root `html` element will have the `fff` class.
 
-## Useful links
+### Custom local storage names
 
-Learn more:
+By default, `NgxModeWatcher` will use the following local storage keys to store the mode and theme:
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- ngx-mode-watcher-mode
+- ngx-mode-watcher-theme
 
-And join the Nx community:
+You can customize these keys by passing a custom `modeStorageKey` and/or `themeStorageKey` to the provider config:
 
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```ts
+provideModeWatcher({
+  modeStorageKey: 'my-mode-key',
+  themeStorageKey: 'my-theme-key',
+});
+```
+
+## ModeWatcherService
+
+To manage the mode of your application, you can inject the `ModeWatcherService`.
+
+```ts
+import { ModeWatcherService } from './mode-watcher.service';
+
+@Component({
+  //...
+})
+export class MyComp {
+  private readonly modeWatcher = inject(ModeWatcherService);
+}
+```
+
+### API
+
+#### toggleMode
+
+A function that toggles the current mode.
+
+```angular2html
+modeWatcher = inject(ModeWatcherService);
+
+<button (click)="modeWatcher.toggleMode()">Toggle Mode</button>
+```
+
+#### setMode
+
+A function that sets the current mode. It accepts a string with the value `"light"`, `"dark"` or `"system"`.
+
+```angular2html
+modeWatcher = inject(ModeWatcherService);
+
+<button (click)="modeWatcher.setMode('light')">Set Light Mode</button>
+<button (click)="modeWatcher.setMode('dark')">Set Dark Mode</button>
+```
+
+#### resetMode
+
+A function that resets the mode to system preferences.
+
+```angular2html
+modeWatcher = inject(ModeWatcherService);
+
+<button (click)="modeWatcher.resetMode()">System</button>
+```
+
+#### setTheme
+
+A function that sets the current theme, it updates the `data-theme` attribute of the root `html` element.
+
+```angular2html
+modeWatcher = inject(ModeWatcherService);
+
+<button (click)="modeWatcher.setTheme('emerald')">Set Emerald Theme</button>
+```
+
+#### mode()
+
+A signal that contains the current mode. It can be `"light"` or `"dark"` or `undefined` if evaluated on the server.
+
+```angular2html
+modeWatcher = inject(ModeWatcherService);
+handleModeChange() {
+    if (modeWatcher.mode() === 'light') {
+        modeWatcher.setMode('dark');
+    } else {
+        modeWatcher.setMode('light');
+    }
+}
+
+<button (click)="handleModeChange()">{{ modeWatcher.mode() }}</button>
+```
+
+#### userPrefersMode()
+
+A signal that represents the user's mode preference. It can be `"light"`, `"dark"` or `"system"`.
+
+#### systemPrefersMode()
+
+A signal that represents the operating system's mode preference. It can be `"light"`, `"dark"` or `undefined` if evaluated on the server. Will automatically track changes to the operating system's mode preference unless this is disabled with the `track` config which takes a boolean.
+
+#### theme()
+
+A signal that represents the theme in use, which will be applied to the root `html` element with the data-theme attribute
+	 
+
+## Inspiration & credits
+
+This project is an Angular port of [svecosystem's mode-watcher](https://github.com/svecosystem/mode-watcher).
