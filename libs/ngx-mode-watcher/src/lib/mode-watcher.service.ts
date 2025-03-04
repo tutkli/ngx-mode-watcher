@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { MODE_WATCHER_CONFIG } from './mode-watcher.config';
-import { localStorageKey, Mode, ThemeColors } from './types';
-import { isValidMode, noopStorage } from './utils';
+import { Mode, ThemeColors } from './types';
+import { isValidMode, noopStorage, sanitizeClassNames } from './utils';
 
 @Injectable({ providedIn: 'root' })
 export class ModeWatcherService {
@@ -24,20 +24,23 @@ export class ModeWatcherService {
 
   /** Theme colors for light and dark modes. */
   private readonly _themeColors = signal<ThemeColors>(this.config.themeColors);
-  public themeColors = this._themeColors.asReadonly();
+  public readonly themeColors = this._themeColors.asReadonly();
+
+  private readonly _theme = signal(this.initTheme());
+  public readonly theme = this._theme.asReadonly();
 
   /** Signal that represents the user's preferred mode (`"dark"`, `"light"` or `"system"`) */
   private readonly _userPrefersMode = signal<Mode>(this.initUserPrefersMode());
-  public userPrefersMode = this._userPrefersMode.asReadonly();
+  public readonly userPrefersMode = this._userPrefersMode.asReadonly();
 
   /** Signal that represents the system's preferred mode (`"dark"`, `"light"` or `undefined`) */
   private readonly _systemPrefersMode = signal<'dark' | 'light' | undefined>(
     undefined
   );
-  public systemPrefersMode = this._systemPrefersMode.asReadonly();
+  public readonly systemPrefersMode = this._systemPrefersMode.asReadonly();
 
   /** Signal that represents the current mode (`"dark"`, `"light"` or `undefined`) */
-  public mode = computed(() => {
+  public readonly mode = computed(() => {
     if (!this.isBrowser) return undefined;
     return this._userPrefersMode() === 'system'
       ? this._systemPrefersMode()
@@ -59,11 +62,19 @@ export class ModeWatcherService {
       mediaQueryState.addEventListener('change', this.mediaQueryChangeHandler);
       this._systemPrefersMode.set(mediaQueryState.matches ? 'light' : 'dark');
 
-      addEventListener('storage', this.storageHandler);
+      addEventListener('storage', this.modeStorageHandler);
+      addEventListener('storage', this.themeStorageHandler);
     }
 
     effect(() => {
-      this.storage.setItem(localStorageKey, this._userPrefersMode());
+      this.storage.setItem(this.config.modeStorageKey, this._userPrefersMode());
+    });
+
+    effect(() => {
+      const theme = this.theme();
+      if (theme !== null && theme !== undefined) {
+        this.storage.setItem(this.config.themeStorageKey, theme);
+      }
     });
 
     effect(() => {
@@ -71,20 +82,40 @@ export class ModeWatcherService {
       const themeColorEl = document.querySelector('meta[name="theme-color"]');
       const themeColors = this._themeColors();
 
-      if (this.mode() === 'light') {
-        htmlEl.classList.remove('dark');
+      const mode = this.mode();
+      const sanitizedDarkClassNames = sanitizeClassNames(
+        this.config.darkClassNames
+      );
+      const sanitizedLightClassNames = sanitizeClassNames(
+        this.config.lightClassNames
+      );
+
+      if (mode === 'light') {
+        if (sanitizedDarkClassNames.length)
+          htmlEl.classList.remove(...sanitizedDarkClassNames);
+        if (sanitizedLightClassNames.length)
+          htmlEl.classList.add(...sanitizedLightClassNames);
         htmlEl.style.colorScheme = 'light';
 
         if (themeColorEl && themeColors) {
           themeColorEl.setAttribute('content', themeColors.light);
         }
       } else {
-        htmlEl.classList.add('dark');
+        if (sanitizedLightClassNames.length)
+          htmlEl.classList.remove(...sanitizedLightClassNames);
+        if (sanitizedDarkClassNames.length)
+          htmlEl.classList.add(...sanitizedDarkClassNames);
         htmlEl.style.colorScheme = 'dark';
         if (themeColorEl && themeColors) {
           themeColorEl.setAttribute('content', themeColors.dark);
         }
       }
+    });
+
+    effect(() => {
+      const htmlEl = document.documentElement;
+      const theme = this.theme();
+      if (theme) htmlEl.setAttribute('data-theme', theme);
     });
 
     this.destroyRef.onDestroy(() => {
@@ -93,7 +124,8 @@ export class ModeWatcherService {
           'change',
           this.mediaQueryChangeHandler
         );
-      removeEventListener('storage', this.storageHandler);
+      removeEventListener('storage', this.modeStorageHandler);
+      removeEventListener('storage', this.themeStorageHandler);
     });
   }
 
@@ -112,18 +144,38 @@ export class ModeWatcherService {
     this._userPrefersMode.set(this.config.defaultMode);
   }
 
+  /** Set the theme to a custom value */
+  public setTheme(theme: string) {
+    this._theme.set(theme);
+  }
+
   private initUserPrefersMode() {
-    const initialValue = this.storage.getItem(localStorageKey);
+    const initialValue = this.storage.getItem(this.config.modeStorageKey);
     return isValidMode(initialValue) ? initialValue : this.config.defaultMode;
   }
 
-  private storageHandler = (e: StorageEvent) => {
-    if (e.key !== localStorageKey) return;
+  private initTheme() {
+    const initialValue = this.storage.getItem(this.config.themeStorageKey);
+    return initialValue ?? this.config.defaultTheme;
+  }
+
+  private modeStorageHandler = (e: StorageEvent) => {
+    if (e.key !== this.config.modeStorageKey) return;
     const newValue = e.newValue;
     if (isValidMode(newValue)) {
       this._userPrefersMode.set(newValue);
     } else {
       this._userPrefersMode.set(this.config.defaultMode);
+    }
+  };
+
+  private themeStorageHandler = (e: StorageEvent) => {
+    if (e.key !== this.config.themeStorageKey) return;
+    const newValue = e.newValue;
+    if (newValue) {
+      this._theme.set(newValue);
+    } else {
+      this._theme.set('');
     }
   };
 

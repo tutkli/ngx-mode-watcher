@@ -1,10 +1,19 @@
 import { InjectionToken } from '@angular/core';
-import { Mode, ThemeColors } from './types';
+import {
+  MODE_WATCHER_MODE_KEY,
+  MODE_WATCHER_THEME_KEY,
+  ModeWatcherConfig,
+} from './types';
 
-export type ModeWatcherConfig = {
-  track: boolean;
-  defaultMode: Mode;
-  themeColors: ThemeColors;
+export const defaultConfig: ModeWatcherConfig = {
+  track: true,
+  defaultMode: 'system',
+  defaultTheme: undefined,
+  themeColors: undefined,
+  darkClassNames: ['dark'],
+  lightClassNames: [],
+  modeStorageKey: MODE_WATCHER_MODE_KEY,
+  themeStorageKey: MODE_WATCHER_THEME_KEY,
 };
 
 export const MODE_WATCHER_CONFIG = new InjectionToken<ModeWatcherConfig>(
@@ -14,12 +23,6 @@ export const MODE_WATCHER_CONFIG = new InjectionToken<ModeWatcherConfig>(
     factory: () => defaultConfig,
   }
 );
-
-export const defaultConfig: ModeWatcherConfig = {
-  track: true,
-  defaultMode: 'system',
-  themeColors: undefined,
-};
 
 export function modeWatcherConfig(
   config: Partial<ModeWatcherConfig>

@@ -6,6 +6,8 @@ import { appRoutes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(appRoutes),
-    provideModeWatcher({ themeColors: { dark: 'black', light: 'white' } }),
+    provideModeWatcher({
+      themeColors: { dark: '#000', light: '#fff' },
+    }),
   ],
 };

@@ -4,12 +4,9 @@ import {
   makeEnvironmentProviders,
   provideAppInitializer,
 } from '@angular/core';
-import {
-  MODE_WATCHER_CONFIG,
-  ModeWatcherConfig,
-  modeWatcherConfig,
-} from './mode-watcher.config';
+import { MODE_WATCHER_CONFIG, modeWatcherConfig } from './mode-watcher.config';
 import { ModeWatcherService } from './mode-watcher.service';
+import { ModeWatcherConfig } from './types';
 import { setInitialMode } from './utils';
 
 export function provideModeWatcher(
@@ -23,7 +20,15 @@ export function provideModeWatcher(
     provideAppInitializer(() => {
       inject(ModeWatcherService);
       const config = inject(MODE_WATCHER_CONFIG);
-      setInitialMode(config.defaultMode, config.themeColors);
+      setInitialMode({
+        defaultMode: config.defaultMode,
+        themeColors: config.themeColors,
+        darkClassNames: config.darkClassNames,
+        lightClassNames: config.lightClassNames,
+        defaultTheme: config.defaultTheme,
+        modeStorageKey: config.modeStorageKey,
+        themeStorageKey: config.themeStorageKey,
+      });
     }),
   ]);
 }
